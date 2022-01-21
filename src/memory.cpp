@@ -4,6 +4,8 @@
 
 using namespace std;
 
+//Funções públicas
+
 VirtualMemory::VirtualMemory(int pagesize, int memsize, string algorit){
     algor_ = algorit;
     read_times_ = 0;
@@ -19,11 +21,11 @@ VirtualMemory::VirtualMemory(int pagesize, int memsize, string algorit){
     //Dos 32 bits de endereçamento virtual (2^32 B), 10 são retirados pois os dados estão em kB (2^10 B), e s são retirados pois os kB estão em blocos de tamanho pagesize = 2^s
     //O número de páginas é então uma potência de 2 dos bits restantes, o que equivale a um shift para a esquerda nesse número de bits 
     ptable_size_ = 1 << (22 - s_);
-    ptable_ = new int(ptable_size_);
+    ptable_ = new int[ptable_size_];
 
     mem_size_ = memsize;
-    memory_ = new unsigned char(memsize);
-    dirty_ = new bool(memsize);
+    memory_ = new unsigned char[memsize];
+    dirty_ = new bool[memsize];
 
 }
 
@@ -52,6 +54,14 @@ int VirtualMemory::get_read_times(){
 int VirtualMemory::get_write_times(){
     return write_times_;
 }
+
+VirtualMemory::~VirtualMemory(){
+    delete[] ptable_;
+    delete[] memory_;
+    delete[] dirty_;
+}
+
+//Funções privadas
 
 int VirtualMemory::convert_to_mem(int page_address){
     return 0;
