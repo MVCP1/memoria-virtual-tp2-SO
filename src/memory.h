@@ -29,20 +29,23 @@ class VirtualMemory{
     private:
         //Retorna o endereço do quadro na memória física correspondente ao endereço da página na memória virtual dado
         //Se não houver um quadro alocado, seleciona um quadro segundo o algoritmo selecionado e salva na tabela 
-        int convert_to_mem(int page_address);
+        int page_to_frame(int page_address);
+
+        //Obtém o endereço da página virtual associada ao quadro da memória física de endereço dado.
+        int VirtualMemory::frame_to_page(int frame_address);
 
         //Spies para representar o carregamento e salvamento na memória secundária. Ela não está sendo representada, mas o número de chamadas é registrado.
         //Os incrementos foram implementados como funções separadas meramente para simular de maneira um pouco mais fiel os acessos à memória.
-        void load_2nd(int mem_address);
-        void save_2nd(int mem_address);
+        void load_2nd(int page_address, int mem_address);
+        void save_2nd(int page_address, int mem_address);
 
-        //Retorna o endereço do quadro da memória a ser substituído (vítima) segundo o algoritmo lru
+        //Retorna o endereço da página a ser substituída (vítima) segundo o algoritmo lru
         int lru();
 
-        //Retorna o endereço do quadro da memória a ser substituído (vítima) segundo o algoritmo fifo
+        //Retorna o endereço da página a ser substituída (vítima) segundo o algoritmo fifo
         int fifo();
 
-        //Retorna o endereço do quadro da memória a ser substituído (vítima) segundo um novo algoritmo (random?)
+        //Retorna o endereço da página a ser substituída (vítima) segundo um novo algoritmo (random?)
         int newalg();
 
         //Executa o algoritmo escolhido e retorna seu resultado.
@@ -56,11 +59,13 @@ class VirtualMemory{
         int ptable_size_;
         unsigned char s_;
         int* ptable_;
+        bool* valid_;
+        bool* dirty_;
 
         //Variáveis privadas usadas para a representação da memória física
         int mem_size_;
+        int frame_size_;
         unsigned char* memory_;
-        bool* dirty_;
 
         //Variáveis privadas usadas para os algoritmos
         string algor_;
