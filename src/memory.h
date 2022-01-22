@@ -2,6 +2,7 @@
 #define MEMORY_H
 
 #include<string>
+#include <list>
 
 using namespace std;
 
@@ -32,7 +33,7 @@ class VirtualMemory{
         int page_to_frame(int page_address);
 
         //Obtém o endereço da página virtual associada ao quadro da memória física de endereço dado.
-        int VirtualMemory::frame_to_page(int frame_address);
+        int frame_to_page(int frame_address);
 
         //Spies para representar o carregamento e salvamento na memória secundária. Ela não está sendo representada, mas o número de chamadas é registrado.
         //Os incrementos foram implementados como funções separadas meramente para simular de maneira um pouco mais fiel os acessos à memória.
@@ -45,7 +46,7 @@ class VirtualMemory{
         //Retorna o endereço da página a ser substituída (vítima) segundo o algoritmo fifo
         int fifo();
 
-        //Retorna o endereço da página a ser substituída (vítima) segundo um novo algoritmo (random?)
+        //Retorna o endereço da página a ser substituída (vítima) segundo um novo algoritmo (random)
         int newalg();
 
         //Executa o algoritmo escolhido e retorna seu resultado.
@@ -69,6 +70,8 @@ class VirtualMemory{
 
         //Variáveis privadas usadas para os algoritmos
         string algor_;
+        list<int> control_;
+        int control_size_;
         
 };
 

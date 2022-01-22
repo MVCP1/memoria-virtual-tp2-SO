@@ -1,6 +1,8 @@
 #include "memory.h"
-#include<string>
-#include<iostream>
+#include <string>
+#include <iostream>
+#include <ctime> 
+#include <list>
 
 using namespace std;
 
@@ -11,7 +13,7 @@ VirtualMemory::VirtualMemory(int pagesize, int memsize, string algorit){
     algor_ = algorit;
     read_times_ = 0;
     write_times_ = 0;
-
+    srand((unsigned)time(0));
     //Guarda o número de bits de pagesize em s
     while(pagesize > 1){
         pagesize = pagesize >> 1;
@@ -29,19 +31,20 @@ VirtualMemory::VirtualMemory(int pagesize, int memsize, string algorit){
     mem_size_ = memsize;
     memory_ = new unsigned char[memsize]();
 
+    control_size_ = mem_size_/frame_size_;
 }
 
 unsigned char VirtualMemory::read_mem(int address){
-    int page_addr = address >> s_;
-    int offset    = address - (page_addr << s_);
+    int page_addr = address >> (s_+10);
+    int offset    = address - (page_addr << (s_+10));
 
     int fram_addr = page_to_frame(page_addr);
     return memory_[fram_addr + offset];
 }
 
 void VirtualMemory::write_mem(int address, unsigned char val){
-    int page_addr = address >> s_;
-    int offset    = address - (page_addr << s_);
+    int page_addr = address >> (s_+10);
+    int offset    = address - (page_addr << (s_+10));
 
     int fram_addr = page_to_frame(page_addr);
 
@@ -86,12 +89,26 @@ int VirtualMemory::page_to_frame(int page_address){
         memory_[vic_frame+1] = (page_address & stoi("000000000111111110000000",0,2)) >> 8;
         memory_[vic_frame+2] = (page_address & stoi("000000000000000011111111",0,2));
 
+    }else if(algor_ == "lru"){
+        int i = ptable_[page_address]/frame_size_;
+        list<int>::iterator remove_it;
+        for (list<int>::iterator it = control_.begin(); it!=control_.end(); ++it){
+            if(*it == i){
+                remove_it = it;
+            }
+        }
+        control_.erase(remove_it);
+        control_.push_back(i);
     }
+
     return ptable_[page_address];
 }
 
 int VirtualMemory::frame_to_page(int frame_address){
-    return (memory_[frame_address]<<16)+(memory_[frame_address+1]<<8)+(memory_[frame_address+2]);
+    int temp1 = memory_[frame_address];
+    int temp2 = memory_[frame_address+1];
+    int temp3 = memory_[frame_address+2];
+    return (temp1<<16)+(temp2<<8)+(temp3);
 }
 
 void VirtualMemory::load_2nd(int page_address, int mem_address){
@@ -103,15 +120,37 @@ void VirtualMemory::save_2nd(int page_address, int mem_address){
 }
 
 int VirtualMemory::fifo(){
-    return 0;
+    if(control_.size() < control_size_){
+        control_.push_back(control_.size());
+        return frame_to_page(control_.back()*frame_size_);
+    }else{
+        int i = control_.front();
+        control_.pop_front();
+        control_.push_back(i);
+        return frame_to_page(i*frame_size_);
+    }
 }
 
 int VirtualMemory::lru(){
-    return 0;
+    if(control_.size() < control_size_){
+        control_.push_back(control_.size());
+        return frame_to_page(control_.back()*frame_size_);
+    }else{
+        int i = control_.front();
+        control_.pop_front();
+        control_.push_back(i);
+        return frame_to_page(i*frame_size_);
+    }
 }
 
 int VirtualMemory::newalg(){
-    return 0;
+    if(control_.size() < control_size_){
+        control_.push_back(control_.size());
+        return frame_to_page(control_.back()*frame_size_);
+    }else{
+        int i = rand()%(control_size_);
+        return frame_to_page(i*frame_size_);
+    }
 }
 
 int VirtualMemory::get_victim(){
