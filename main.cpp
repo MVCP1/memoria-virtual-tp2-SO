@@ -1,63 +1,53 @@
 #include <string>
 #include <iostream>
-#include <stdio.h>
-#include <stdlib.h>
+#include <fstream>
 
-//#include "src/memory.h"
+#include "src/memory.h"
 
 using namespace std;
 
 int main(int argc, char* argv[]){
-    string programa, algoritmo, arquivo;
-    int sizePagina, memoria;
-    int lidas, escritas; // Número de páginas lidas e escritas durante execução do programa
-    cout<<argc<<endl;
-    for(int i=0; i<argc;i++){
-        cout<<argv[i]<<endl;
-    }
-    // Leitura das variáveis de input
-    cout << "prompt> ";
-    cin >> programa >> algoritmo >> arquivo;
-    cin >> sizePagina >> memoria;
+    string algoritmo = argv[1];
+    string arquivo = argv[2];
+    int sizePagina = stoi(argv[3]);
+    int memoria = stoi(argv[4]);
     
-    // Se o programa certo foi chamado
-    if(programa == "tp2virtual"){
+    // Imprimindo mensagens de inicialização do programa
+    cout << "Executando o simulador...\n";
+    cout << "Arquivo de entrada: "   << arquivo    << "\n";
+    cout << "Tamanho da memoria: "   << memoria    << " KB\n";
+    cout << "Tamanho das páginas: "  << sizePagina << " KB\n";
+    cout << "Tecnica de reposicao: " << algoritmo  << "\n";
+    
+    // Execução do programa
+    VirtualMemory virt_mem(sizePagina, memoria, algoritmo);
+
+    int lidas, escritas; // Número de páginas lidas e escritas durante execução do programa
+    
+    ifstream file;
+    int addr;
+    char rw;
+    
+    file.open(arquivo);
+
+    while (file >> hex >> addr) {
+        file >> rw;
         
-        // Imprimindo mensagens de inicialização do programa
-        // cout << "prompt> " << programa << " " << algoritmo << " " << file << " " << sizePagina << " " << memoria << "\n";
-        cout << "Executando o simulador...\n";
-        cout << "Arquivo de entrada: " << arquivo << "\n";
-        cout << "Tamanho da memoria: " << memoria << " KB\n";
-        cout << "Tamanho das páginas: " << sizePagina << " KB\n";
-        cout << "Tecnica de reposicao: " << algoritmo << "\n";
-
-        // Execução do programa
-        // lidas = 520;
-        // escritas = 352;
-        FILE *file = fopen(arquivo.c_str(), "r");
-        unsigned addr;
-        char rw;
-        lidas = 0;
-        escritas = 0;
-        while (fscanf(file,"%x %c",&addr,&rw) != EOF) {
-            if(rw == 'R'){
-                lidas += 1;
-            }else if(rw == 'W'){
-                escritas += 1;
-            }
-        }
-        
-        fclose(file);
-
-        // Resultado encontrado
-        cout << "Paginas lidas: " << lidas << "\n";
-        cout << "Paginas escritas: " << escritas << "\n";
-
-
-    // Retorna erro se outro programa foi chamado
-    }else{
-        cout << "Erro: Programa solicitado não reconhecido.\n";
+        switch(rw){
+            case 'R':
+                virt_mem.read_mem(addr);
+                break;
+            case 'W':
+                virt_mem.write_mem(addr,42);
+                break;
+        } 
     }
+    
+    file.close();
+
+    // Resultado encontrado
+    cout << "Paginas lidas: "    << virt_mem.get_read_times()  << "\n";
+    cout << "Paginas escritas: " << virt_mem.get_write_times() << "\n";
 
     return 0;
 }
