@@ -7,14 +7,11 @@
 
 using namespace std;
 
-int main(int argc, char* argv[]){
+int main(){
     string programa, algoritmo, arquivo;
     int sizePagina, memoria;
     int lidas, escritas; // Número de páginas lidas e escritas durante execução do programa
-    cout<<argc<<endl;
-    for(int i=0; i<argc;i++){
-        cout<<argv[i]<<endl;
-    }
+    
     // Leitura das variáveis de input
     cout << "prompt> ";
     cin >> programa >> algoritmo >> arquivo;

@@ -12,14 +12,9 @@ int main(int argc, char* argv[]){
     int sizePagina = stoi(argv[3]);
     int memoria = stoi(argv[4]);
     
-    // Imprimindo mensagens de inicialização do programa
-    cout << "Executando o simulador...\n";
-    cout << "Arquivo de entrada: "   << arquivo    << "\n";
-    cout << "Tamanho da memoria: "   << memoria    << " KB\n";
-    cout << "Tamanho das páginas: "  << sizePagina << " KB\n";
-    cout << "Tecnica de reposicao: " << algoritmo  << "\n";
-    
     // Execução do programa
+    cout << "Executando o simulador...\n";
+
     VirtualMemory virt_mem(sizePagina, memoria, algoritmo);
 
     int lidas, escritas; // Número de páginas lidas e escritas durante execução do programa
@@ -46,8 +41,12 @@ int main(int argc, char* argv[]){
     file.close();
 
     // Resultado encontrado
-    cout << "Paginas lidas: "    << virt_mem.get_read_times()  << "\n";
-    cout << "Paginas escritas: " << virt_mem.get_write_times() << "\n";
-
+    cout << "Arquivo de entrada: "   << arquivo                    << endl;
+    cout << "Tamanho da memoria: "   << memoria                    << " KB" << endl;
+    cout << "Tamanho das páginas: "  << sizePagina                 << " KB" << endl;
+    cout << "Tecnica de reposicao: " << algoritmo                  << endl;
+    cout << "Paginas lidas: "        << virt_mem.get_read_times()  << endl;
+    cout << "Paginas escritas: "     << virt_mem.get_write_times() << endl;
+    
     return 0;
 }
