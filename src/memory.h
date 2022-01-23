@@ -12,6 +12,9 @@ class VirtualMemory{
         //A memória virtual sempre tem 2^32 entradas, cada uma de um byte endereçadas por 32bits, independente do tamanho da memória física. 
         VirtualMemory(int pagesize, int memsize, string algorit);
 
+        //Construtor para o modo debug
+        VirtualMemory(int pagesize, int memsize, string algorit, bool debug);
+
         //Lê na memória virtual o byte de endereço indicado por address, o endereço tendo 32bits, e retorna o valor lido.
         unsigned char read_mem(int address);
 
@@ -52,26 +55,29 @@ class VirtualMemory{
         //Executa o algoritmo escolhido e retorna seu resultado.
         int get_victim();
 
-        //Variáveis privadas que guardam 
+        //Variáveis privadas que guardam os acessos à memória secundária.
         int read_times_;
         int write_times_;
 
-        //Variáveis privadas usadas para a representação da tabela de páginas
+        //Variáveis privadas usadas para a representação da tabela de páginas.
         int ptable_size_;
         unsigned char s_;
         int* ptable_;
         bool* valid_;
         bool* dirty_;
 
-        //Variáveis privadas usadas para a representação da memória física
+        //Variáveis privadas usadas para a representação da memória física.
         int mem_size_;
         int frame_size_;
         unsigned char* memory_;
 
-        //Variáveis privadas usadas para os algoritmos
+        //Variáveis privadas usadas para os algoritmos.
         string algor_;
         list<int> control_;
         int control_size_;
+
+        //Variável privada auxiliar na depuração.
+        bool debug_;
         
 };
 
